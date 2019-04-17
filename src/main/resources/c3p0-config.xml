@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<c3p0-config>
+	<!-- 指定连接数据源的基本属性 -->
+	<named-config name="helloc3p0">
+		<!-- 健康证本地测试数据库 -->
+		<property name="user">jkzjkww</property>
+		<property name="password">jkzjk</property>
+		<property name="driverClass">oracle.jdbc.OracleDriver</property>
+		<property name="jdbcUrl">jdbc:oracle:thin:@192.168.22.213:1521:jkzjkww</property>
+		<!-- 健康证外网 20 数据库 -->
+		<!-- <property name="user">hzcyry</property>
+		<property name="password">hzcyry</property>
+		<property name="driverClass">oracle.jdbc.OracleDriver</property>
+		<property name="jdbcUrl">jdbc:oracle:thin:@10.255.36.20:1521:orcl</property> -->
+		<!-- 健康证内网 143 数据库 -->
+		<!-- <property name="user">hzcyry</property>
+		<property name="password">hzcyry</property>
+		<property name="driverClass">oracle.jdbc.OracleDriver</property>
+		<property name="jdbcUrl">jdbc:oracle:thin:@192.26.28.143:1521:orcl</property> -->
+		<!-- 健康证外网 180 数据库 -->
+		<!-- <property name="user">hzcyry</property>
+		<property name="password">hzcyry</property>
+		<property name="driverClass">oracle.jdbc.OracleDriver</property>
+		<property name="jdbcUrl">jdbc:oracle:thin:@192.26.7.180:1521:orcl</property> -->
+		<property name="acquireIncrement">50</property>
+		<property name="initialPoolSize">5</property>
+		<property name="minPoolSize">5</property>
+		<property name="maxPoolSize">10</property>
+
+		<!-- intergalactoApp adopts a different approach to configuring statement 
+			caching -->
+		<property name="maxStatements">20</property>
+		<property name="maxStatementsPerConnection">5</property>
+	</named-config>
+</c3p0-config>

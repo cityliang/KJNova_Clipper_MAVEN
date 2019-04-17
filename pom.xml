@@ -1,0 +1,192 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.city</groupId>
+  <artifactId>KJNova_Clipper_MAVEN</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <description>图片裁剪 MAVEN 项目</description>
+  
+  <properties>
+		<jdk.version>1.7</jdk.version>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+  
+  <dependencies>
+  		<!-- image util -->
+		<dependency>
+		    <groupId>net.coobird</groupId>
+		    <artifactId>thumbnailator</artifactId>
+		    <version>0.4.8</version>
+		</dependency>
+		<!-- Oracle 数据库依赖 -->
+		<dependency>
+		    <groupId>com.oracle</groupId>
+		    <artifactId>ojdbc14</artifactId>
+		    <version>10.2.0.4.0</version>
+		</dependency>
+		<dependency>
+		    <groupId>mysql</groupId>
+		    <artifactId>mysql-connector-java</artifactId>
+		    <version>5.1.47</version>
+		</dependency>
+		<dependency>
+		    <groupId>com.mchange</groupId>
+		    <artifactId>c3p0</artifactId>
+		    <version>0.9.5.4</version>
+		</dependency>
+		<!-- maven 打包插件 -->
+		<!-- <dependency>
+	        <groupId>org.apache.maven.plugins</groupId>
+	        <artifactId>maven-resources-plugin</artifactId>
+	        <version>2.4.3</version>
+	    </dependency> -->
+  </dependencies>
+  
+  <build>
+		<finalName>KJNova_Clipper_MAVEN</finalName>
+		<!-- <resources>
+			<resource>
+				<directory>src\main\resources</directory>
+			</resource>
+		</resources> -->
+		<plugins>
+			<plugin>
+			    <artifactId>maven-assembly-plugin</artifactId>
+			    <configuration>
+			         <!-- 打包后的包名是否包含assembly的id名 -->
+			        <appendAssemblyId>false</appendAssemblyId>
+			          <!-- 指定最后tar或者zip包的名字 -->
+			          <finalName>KJNova_Clipper_MAVEN</finalName>
+			          <!-- tar或者zip包的输出目录 -->
+			          <!-- ../ 是指当前项目的根目录 ，例如：F:\pvpsddp\pvpsddp-gateway 的上一级-->
+			          <outputDirectory>C:\STS\KJNova_Clipper_MAVEN\target</outputDirectory>
+			        <descriptors>
+			              <!-- 引用的assembly配置文件，可以用多个，即可以同时打包多个格式的包 -->
+			            <descriptor>src/main/resources/assembly.xml</descriptor>
+			        </descriptors>
+			    </configuration>
+			    <executions>
+			      <!-- phase加入package后，则在执行maven package时就可以调用maven-assembly-plugin插件定义的打包方式 -->
+			        <execution>
+			          <!--名字任意 -->
+			            <id>make-assembly</id>
+			           <!-- 绑定到package生命周期阶段上 -->
+			            <phase>package</phase>
+			            <goals>
+			               <!-- 只运行一次 --> 
+			                <goal>single</goal>
+			            </goals>
+			        </execution>
+			    </executions>
+			</plugin>
+			<plugin> <!-- 该插件的主要功能是配置编译插件及jdk版本 编码格式等 -->
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>${jdk.version}</source>
+					<target>${jdk.version}</target>
+					<encoding>${project.build.sourceEncoding}</encoding>
+				</configuration>
+			</plugin>
+			
+			<!-- 1、设置jar的入口类 -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<configuration>
+					<!-- 排除配置文件 不打包资源文件（配置文件和依赖包分开） -->
+		            <excludes>
+		                <exclude>*.**</exclude>
+		                <exclude>*/*.xml</exclude>
+		                <exclude>*/*.txt</exclude>
+		            </excludes>
+					<archive>
+						<!--生成的jar中，不要包含pom.xml和pom.properties这两个文件-->
+                        <addMavenDescriptor>false</addMavenDescriptor>
+						<manifest>
+							<!-- MANIFEST.MF 中 Class-Path 加入前缀 -->
+							<addClasspath>true</addClasspath>
+							 <!-- jar包不包含唯一版本标识 -->
+							<classpathPrefix>lib/</classpathPrefix>
+							<!--指定入口类 -->
+							<mainClass>com.huntto.TbcxApp</mainClass>
+						</manifest>
+						<manifestEntries>
+		                    <!--MANIFEST.MF 中 Class-Path 加入资源文件目录 -->
+		                    <Class-Path>./resources/</Class-Path>
+		                </manifestEntries>
+					</archive>
+					<outputDirectory>${project.build.directory}</outputDirectory>
+				</configuration>
+			</plugin>
+			<!--2、把附属的jar打到jar内部的lib目录中 -->
+			<plugin>
+	            <groupId>org.apache.maven.plugins</groupId>
+	            <artifactId>maven-dependency-plugin</artifactId>
+	            <executions>
+	                <execution>
+	                    <id>copy-dependencies</id>
+	                    <phase>prepare-package</phase>
+	                    <goals>
+	                        <goal>copy-dependencies</goal>
+	                    </goals>
+	                    <configuration>
+	                        <outputDirectory>${project.build.directory}/lib</outputDirectory>
+	                        <overWriteReleases>false</overWriteReleases>
+	                        <overWriteSnapshots>false</overWriteSnapshots>
+	                        <overWriteIfNewer>true</overWriteIfNewer>
+	                    </configuration>
+	                </execution>
+	            </executions>
+	        </plugin>
+
+			<!-- 3、打包过程忽略Junit测试 -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<skip>true</skip>
+				</configuration>
+			</plugin>
+			<!-- mybatis-generator -->
+			<!-- <plugin>
+				<groupId>org.mybatis.generator</groupId>
+				<artifactId>mybatis-generator-maven-plugin</artifactId>
+				<version>1.3.2</version>
+				<configuration>
+					<verbose>true</verbose>
+					<overwrite>true</overwrite>
+				</configuration>
+			</plugin> -->
+			
+			<!-- 该插件的作用是用于复制指定的文件 -->
+		    <!-- <plugin>
+		        <artifactId>maven-resources-plugin</artifactId>
+		        <executions>
+		            <execution>
+		                <id>copy-resources</id>
+		                <phase>package</phase>
+		                <goals>
+		                    <goal>copy-resources</goal>
+		                </goals>
+		                <configuration>
+		                    <resources>
+		                        <resource>
+		                            <directory>src/main/resources</directory>
+		                            <excludes>
+						                <exclude>*.yml</exclude>
+						                <exclude>*.txt</exclude>
+						            </excludes>
+		                            <includes>
+		                                <include>*.properties</include>
+		                                <include>*.yml</include>
+		                            </includes>
+		                        </resource>
+		                    </resources>
+		                    <outputDirectory>${project.build.directory}/resources</outputDirectory>
+		                </configuration>
+		            </execution>
+		        </executions>
+		    </plugin> -->
+		</plugins>
+	</build>
+</project>
